@@ -1,0 +1,113 @@
+.pane {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 0 1 auto;
+  max-height: 46%;
+  border-bottom: 1px solid var(--border);
+}
+
+.body {
+  padding: var(--pane-padding);
+  min-height: 0;
+}
+
+.heading {
+  margin-bottom: 1.25rem;
+}
+
+.levelLabel {
+  display: block;
+  color: var(--fg-muted);
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 0.35rem;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--fg);
+  letter-spacing: -0.01em;
+}
+
+.description {
+  margin: 0.2rem 0 0;
+  color: var(--fg-muted);
+}
+
+.objective {
+  flex-shrink: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 0.85rem;
+  padding: 0.7rem var(--pane-padding);
+  border-top: 1px solid var(--border);
+  border-left: 2px solid var(--yellow);
+  background: var(--bg-raised);
+  transition: border-color 200ms ease;
+}
+
+.objective[data-solved] {
+  border-left-color: var(--green);
+}
+
+.objectiveLabel {
+  flex-shrink: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--yellow);
+}
+
+.objective[data-solved] .objectiveLabel {
+  color: var(--green);
+}
+
+.objectiveText {
+  margin: 0;
+  color: var(--fg);
+}
+
+.solvedBar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem var(--pane-padding);
+  border-top: 1px solid var(--border);
+  background: color-mix(in srgb, var(--green) 10%, var(--bg-raised));
+  flex-shrink: 0;
+}
+
+.check {
+  color: var(--green);
+  font-weight: 700;
+}
+
+.solvedText {
+  color: var(--fg-dim);
+  font-size: 0.88rem;
+}
+
+.next {
+  margin-left: auto;
+  padding: 0.25rem 0.8rem;
+  border: 1px solid var(--green);
+  border-radius: 3px;
+  color: var(--green);
+  font-size: 0.85rem;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.next:hover {
+  background: var(--green);
+  color: var(--bg);
+}
+
+@media (max-width: 900px) {
+  .pane {
+    max-height: none;
+  }
+}

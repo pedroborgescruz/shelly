@@ -1,0 +1,68 @@
+.manual {
+  padding: var(--pane-padding);
+}
+
+.name {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--fg);
+}
+
+.name::before {
+  content: "# ";
+  color: var(--fg-muted);
+  font-weight: 400;
+}
+
+.description {
+  margin: 0.35rem 0 1.5rem;
+  color: var(--fg-dim);
+  max-width: 54ch;
+}
+
+.examples {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.example {
+  margin-bottom: 1.1rem;
+}
+
+.text {
+  margin: 0;
+  color: var(--fg-muted);
+}
+
+.command {
+  margin: 0.25rem 0 0 1rem;
+  padding: 0.3rem 0.7rem;
+  border-left: 1px solid var(--border-strong);
+  color: var(--cyan);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.placeholder {
+  color: var(--orange);
+}
+
+.missing {
+  color: var(--red);
+  margin: 0;
+}
+
+.footer {
+  margin: 1.75rem 0 0;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--border);
+  color: var(--fg-muted);
+  font-size: 0.78rem;
+  max-width: 54ch;
+}
+
+.tldrName {
+  color: var(--fg-dim);
+}

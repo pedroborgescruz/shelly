@@ -1,0 +1,107 @@
+.header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0 1.25rem;
+  height: 3rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-sunken);
+  flex-shrink: 0;
+}
+
+.brand {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.sigil {
+  color: var(--green);
+}
+
+.name {
+  color: var(--fg);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.tagline {
+  color: var(--fg-muted);
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.levels {
+  display: flex;
+  gap: 0.25rem;
+  margin-left: auto;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.levels::-webkit-scrollbar {
+  display: none;
+}
+
+.level {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.25rem 0.7rem;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  color: var(--fg-muted);
+  white-space: nowrap;
+  transition: color 120ms ease, border-color 120ms ease, background 120ms ease;
+}
+
+.level:hover {
+  color: var(--fg-dim);
+  background: var(--bg-highlight);
+}
+
+.level[data-solved] .levelNumber {
+  color: var(--green);
+}
+
+.level[data-current] {
+  border-color: var(--border-strong);
+  background: var(--bg-raised);
+  color: var(--fg);
+}
+
+.levelNumber {
+  font-size: 0.78rem;
+  color: var(--fg-muted);
+}
+
+.level[data-current] .levelNumber {
+  color: var(--blue);
+}
+
+.levelTitle {
+  font-size: 0.82rem;
+}
+
+.reset {
+  padding: 0.25rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--fg-muted);
+  font-size: 0.8rem;
+  white-space: nowrap;
+  transition: color 120ms ease, border-color 120ms ease;
+}
+
+.reset:hover {
+  color: var(--orange);
+  border-color: var(--orange);
+}
+
+@media (max-width: 760px) {
+  .tagline,
+  .levelTitle {
+    display: none;
+  }
+}
