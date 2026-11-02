@@ -65,6 +65,18 @@
   color: var(--fg-muted);
 }
 
+.output[data-status="hint"] {
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.85rem;
+  border-left: 2px solid var(--yellow);
+  background: color-mix(in srgb, var(--yellow) 8%, transparent);
+  color: var(--yellow);
+}
+
+.output[data-status="note"] {
+  color: var(--cyan);
+}
+
 .output[data-status="win"] {
   margin-top: 0.5rem;
   padding: 0.5rem 0.85rem;

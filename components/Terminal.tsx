@@ -25,10 +25,13 @@ export function Terminal() {
   const currentLevelId = useShellStore((state) => state.currentLevelId);
   const executeCommand = useShellStore((state) => state.executeCommand);
   const printInfo = useShellStore((state) => state.printInfo);
+  const markHelpUsed = useShellStore((state) => state.markHelpUsed);
 
   const [value, setValue] = useState("");
   /** How far back in `inputHistory` the arrow keys have walked. */
   const [recallIndex, setRecallIndex] = useState<number | null>(null);
+  /** How many lines of the canonical solution `solve` has typed so far. */
+  const [solveStep, setSolveStep] = useState(0);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollerRef = useRef<HTMLDivElement>(null);
@@ -79,9 +82,37 @@ export function Terminal() {
     if (candidates.length > 1) printInfo(candidates.join("  "));
   }
 
+  /**
+   * The last rung of the help ladder: type the answer into the prompt instead
+   * of printing it, so the solution still passes through the player's fingers.
+   */
+  function solve() {
+    const level = getLevel(currentLevelId);
+    const steps = level.solutions[0] ?? [];
+    const step = steps[solveStep];
+
+    if (!step) {
+      printInfo("Nothing left to type — press Enter to run the line in the prompt.");
+      return;
+    }
+
+    markHelpUsed();
+    printInfo(
+      `solve — step ${solveStep + 1} of ${steps.length} is in the prompt. Read it, then press Enter.`,
+    );
+    setValue(step);
+    setSolveStep(solveStep + 1);
+  }
+
   function onKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
     if (event.key === "Enter") {
       event.preventDefault();
+
+      if (value.trim().split(/\s+/)[0] === "solve") {
+        solve();
+        return;
+      }
+
       executeCommand(value);
       setValue("");
       setRecallIndex(null);
@@ -184,7 +215,8 @@ export function Terminal() {
           <kbd>Ctrl</kbd>+<kbd>L</kbd> clear
         </span>
         <span>
-          <code>help</code> · <code>tldr &lt;cmd&gt;</code> · <code>reset</code>
+          <code>help</code> · <code>tldr &lt;cmd&gt;</code> · <code>hint</code> ·{" "}
+          <code>solve</code> · <code>reset</code>
         </span>
       </div>
     </div>

@@ -1,5 +1,6 @@
-import { Game } from "@/components/Game";
+import { ChapterMap } from "@/components/ChapterMap";
+import { loadLevelContent } from "@/lib/levels/loadContent";
 
 export default function Home() {
-  return <Game />;
+  return <ChapterMap content={loadLevelContent()} />;
 }

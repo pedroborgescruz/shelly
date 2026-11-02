@@ -11,3 +11,6 @@ export const APP_LOG = [
 ].join("\n");
 
 export const APP_LOG_ERRORS = APP_LOG.split("\n").filter((line) => line.includes("ERROR"));
+
+/** The line level 3 asks you to write into `.env`. */
+export const SECRET = "API_KEY=shelly-dev-7f3a";

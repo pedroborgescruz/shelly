@@ -83,6 +83,8 @@ function runMeta(command: Command, level: Level, effects: Effects): CommandResul
         unlocked,
         ``,
         `  tldr <cmd>  practical examples in the right pane (${tldrIndex().length} pages)`,
+        `  hint        a nudge, getting more specific each time you ask`,
+        `  solve       type the answer into the prompt for you`,
         `  reset       start this level over`,
         `  clear       wipe the scrollback`,
         ``,

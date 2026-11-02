@@ -11,6 +11,7 @@
 
 .brand {
   display: flex;
+  text-decoration: none;
   align-items: baseline;
   gap: 0.5rem;
   min-width: 0;
@@ -46,6 +47,7 @@
 
 .level {
   display: flex;
+  text-decoration: none;
   align-items: baseline;
   gap: 0.5rem;
   padding: 0.25rem 0.7rem;

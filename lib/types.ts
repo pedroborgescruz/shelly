@@ -53,7 +53,7 @@ export interface Script {
 
 /* -------------------------------- Terminal -------------------------------- */
 
-export type HistoryStatus = "success" | "error" | "info" | "win";
+export type HistoryStatus = "success" | "error" | "info" | "win" | "hint" | "note";
 
 export interface HistoryItem {
   id: string;
@@ -65,14 +65,32 @@ export interface HistoryItem {
   cwd?: string;
 }
 
+/* -------------------------------- Chapters -------------------------------- */
+
+export interface Chapter {
+  id: string;
+  /** 1-based position in the curriculum; also the unlock order. */
+  index: number;
+  title: string;
+  summary: string;
+  /**
+   * Commands this chapter introduces. A level allows everything unlocked by
+   * its own chapter and every earlier one — guardrails accumulate rather than
+   * being whitelisted per level.
+   */
+  unlocks: string[];
+  /** `planned` chapters appear on the map with no levels behind them yet. */
+  status: "ready" | "planned";
+}
+
 /* --------------------------------- Levels --------------------------------- */
 
 /**
- * Guardrail entry. A command absent from a level's `allowedCommands` is
- * intercepted before it can touch the filesystem.
+ * Guardrail entry. A command outside a level's allowed set is intercepted
+ * before it can touch the filesystem.
  */
 export interface CommandBehavior {
-  /** Shown after an attempt that ran but did not satisfy the objective. */
+  /** One-line reminder, shown by `help`. */
   hint?: string;
 }
 
@@ -89,6 +107,10 @@ export interface WinCheckArgs {
   commandsRun: string[];
   /** Every operator the user has used during this level. */
   operatorsUsed: string[];
+  /** Command names in *this* submission only. */
+  lineCommands: string[];
+  /** Operators in *this* submission only. */
+  lineOperators: string[];
 }
 
 export interface WinCondition {
@@ -100,24 +122,51 @@ export interface WinCondition {
   check: (args: WinCheckArgs) => boolean;
 }
 
-export interface Level {
+/**
+ * A targeted response to a near miss. The first diagnostic whose `when`
+ * matches an unsuccessful submission is shown instead of silence — the
+ * difference between "I got it wrong" and "I see where I went wrong".
+ */
+export interface Diagnostic {
+  when: (args: WinCheckArgs) => boolean;
+  say: string;
+}
+
+/** The half of a level authored as markdown in `content/levels/`. */
+export interface LevelContent {
   id: number;
+  chapterId: string;
   title: string;
-  /** Short subtitle for the lesson header. */
   description: string;
+  /** One-line objective, rendered as the puzzle prompt. Markdown inline. */
+  prompt: string;
   /** Markdown body: the teaching text. */
   lesson: string;
-  /** One-line objective, rendered as the puzzle prompt. */
-  prompt: string;
-
-  initialState: {
-    startingPath: string;
-    fileTree: VirtualFileSystem;
-  };
-
-  allowedCommands: Record<string, CommandBehavior>;
-
-  winCondition: WinCondition;
-
   successMessage: string;
+  /** The commands this level is *about*, with the reminder `help` prints. */
+  focus: Record<string, string>;
+  /** Progressive hints, vaguest first. The last one may name the operator. */
+  hints: string[];
 }
+
+/** The half of a level authored as code in `lib/levels/rules.ts`. */
+export interface LevelRules {
+  startingPath: string;
+  fileTree: VirtualFileSystem;
+  winCondition: WinCondition;
+  diagnostics?: Diagnostic[];
+  /**
+   * Command sequences that must solve the level. The first is what `solve`
+   * types into the prompt, one line per press.
+   */
+  solutions: string[][];
+  /** Sequences that must NOT solve it — the near misses worth guarding. */
+  nearMisses: string[][];
+}
+
+export type Level = LevelContent &
+  LevelRules & {
+    chapter: Chapter;
+    /** Everything unlocked so far, keyed by command name. */
+    allowedCommands: Record<string, CommandBehavior>;
+  };

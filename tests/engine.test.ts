@@ -2,17 +2,19 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { evaluate } from "@/lib/evaluator";
 import { readFile, lookup, isDir, isFile } from "@/lib/fs/vfs";
-import { getLevel } from "@/lib/levels";
-import { APP_LOG_ERRORS } from "@/lib/levels/data";
-import { SECRET } from "@/lib/levels/level3";
+import { getLevel, hydrateCatalog } from "@/lib/levels";
+import { loadLevelContent } from "@/lib/levels/loadContent";
+import { APP_LOG_ERRORS, SECRET } from "@/lib/levels/data";
 import { parse, astOperators, commandNamesIn } from "@/lib/parser/parse";
 import { clone } from "@/lib/fs/vfs";
 import type { Level, VirtualFileSystem } from "@/lib/types";
 
+hydrateCatalog(loadLevelContent());
+
 /** Run a sequence of lines against a level, threading state through. */
 function session(level: Level, lines: string[]) {
-  let fs: VirtualFileSystem = clone(level.initialState.fileTree);
-  let cwd = level.initialState.startingPath;
+  let fs: VirtualFileSystem = clone(level.fileTree);
+  let cwd = level.startingPath;
   let prevCwd: string | null = null;
   const commandsRun: string[] = [];
   const operatorsUsed: string[] = [];
@@ -47,6 +49,8 @@ function solved(level: Level, lines: string[]) {
       cwd: run.cwd,
       commandsRun: run.commandsRun,
       operatorsUsed: run.operatorsUsed,
+      lineCommands: run.last.commandNames,
+      lineOperators: run.last.operators,
     })
   );
 }
@@ -205,7 +209,7 @@ test("help and clear bypass the level guardrails", () => {
 test("every level is solvable and its filesystem is well formed", () => {
   for (const id of [1, 2, 3, 4]) {
     const level = getLevel(id);
-    const root = lookup(level.initialState.fileTree, level.initialState.startingPath);
+    const root = lookup(level.fileTree, level.startingPath);
     assert.ok(isDir(root), `level ${id} starting path must be a directory`);
     assert.ok(!isFile(root));
   }

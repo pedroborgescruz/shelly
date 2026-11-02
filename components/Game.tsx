@@ -1,29 +1,26 @@
 "use client";
 
-import { useShellStore } from "@/store/useShellStore";
-import { Header } from "./Header";
-import { LessonPane } from "./LessonPane";
-import { Stage } from "./Stage";
-import { Terminal } from "./Terminal";
+import dynamic from "next/dynamic";
+import type { LevelContent } from "@/lib/types";
 import styles from "./Game.module.css";
 
-export function Game() {
-  // Remounting the terminal on a level change resets its draft line, recall
-  // index and focus without an effect that fights React.
-  const currentLevelId = useShellStore((state) => state.currentLevelId);
+/**
+ * The game is rendered on the client only.
+ *
+ * A terminal is inert without JavaScript, so prerendering it buys nothing —
+ * and it would mean server-rendering a shell session whose filesystem, history
+ * and current level only exist once the store has been initialised in the
+ * browser.
+ */
+const GameShell = dynamic(() => import("./GameShell"), {
+  ssr: false,
+  loading: () => (
+    <div className={styles.booting}>
+      <span className={styles.bootSigil}>$</span> booting shelly…
+    </div>
+  ),
+});
 
-  return (
-    <main className={styles.shell}>
-      <Header />
-      <div className={styles.panes}>
-        <section className={styles.sandbox} aria-label="Lesson and terminal">
-          <LessonPane />
-          <Terminal key={currentLevelId} />
-        </section>
-        <aside className={styles.stage} aria-label="Filesystem and manual">
-          <Stage />
-        </aside>
-      </div>
-    </main>
-  );
+export function Game({ content, levelId }: { content: LevelContent[]; levelId: number }) {
+  return <GameShell content={content} levelId={levelId} />;
 }

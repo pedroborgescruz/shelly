@@ -71,6 +71,23 @@
   color: var(--fg);
 }
 
+.hint {
+  margin-left: auto;
+  flex-shrink: 0;
+  align-self: center;
+  padding: 0.15rem 0.6rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 3px;
+  color: var(--fg-muted);
+  font-size: 0.78rem;
+  transition: color 120ms ease, border-color 120ms ease;
+}
+
+.hint:hover {
+  color: var(--yellow);
+  border-color: var(--yellow);
+}
+
 .solvedBar {
   display: flex;
   align-items: center;
@@ -93,6 +110,7 @@
 
 .next {
   margin-left: auto;
+  text-decoration: none;
   padding: 0.25rem 0.8rem;
   border: 1px solid var(--green);
   border-radius: 3px;

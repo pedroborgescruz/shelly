@@ -443,7 +443,7 @@ export function isKnownCommand(name: string): boolean {
  * Commands that bypass a level's guardrails, because they are about the game
  * rather than the puzzle.
  */
-export const META_COMMANDS = new Set(["tldr", "clear", "help", "reset"]);
+export const META_COMMANDS = new Set(["tldr", "clear", "help", "reset", "hint", "solve"]);
 
 export type { CommandResult };
 export { displayPath, basename };

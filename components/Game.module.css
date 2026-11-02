@@ -51,3 +51,16 @@
     max-height: 22rem;
   }
 }
+
+.booting {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 100dvh;
+  padding: var(--pane-padding);
+  color: var(--fg-muted);
+}
+
+.bootSigil {
+  color: var(--green);
+}

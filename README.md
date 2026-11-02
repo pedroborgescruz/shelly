@@ -1,8 +1,12 @@
 # Shelly
 
 An interactive, web-based game that teaches the Unix shell by making you use one.
-Four guardrailed puzzles cover the ground of *The Missing Semester* lecture 1:
-orientation, file manipulation, redirection, and pipes.
+Guardrailed puzzles, grouped into chapters, working through the command-line
+ground of [The Missing Semester](https://missing.csail.mit.edu/).
+
+Four levels are playable today — orientation, manipulation, redirection and
+pipes. See [docs/ROADMAP.md](docs/ROADMAP.md) for the other eleven chapters and
+the order they land in.
 
 ```bash
 npm install
@@ -32,10 +36,17 @@ win condition asserts on the resulting **state**, not on the text typed.
 | `lib/fs/vfs.ts` | The virtual filesystem: path resolution, mutations, ASCII tree rendering |
 | `lib/commands/` | One implementation per command — `pwd`, `ls`, `cd`, `mkdir`, `touch`, `echo`, `cat`, `grep`, `wc`, `head`, `tail`, `tldr`, `clear` |
 | `lib/evaluator.ts` | Guardrails, pipelines, redirection, `&&`/`\|\|`, and the win check inputs |
-| `lib/levels/` | One file per level: lesson copy, starting filesystem, allowed commands, win condition |
+| `content/levels/*.md` | **The prose half of a level**: lesson, objective, hints, success line |
+| `lib/levels/rules.ts` | **The executable half**: starting world, win condition, diagnostics, solutions |
+| `lib/levels/chapters.ts` | The curriculum spine, and which commands each chapter unlocks |
 | `lib/tldr.ts` | The abridged manual pages shown in the right pane |
-| `store/useShellStore.ts` | Zustand "kernel": filesystem, cwd, history, progress |
-| `components/` | The TUI — header, lesson pane, terminal, ASCII tree, manual |
+| `store/useShellStore.ts` | Zustand "kernel": filesystem, cwd, history, progress, help ladder |
+| `components/` | The TUI — chapter map, header, lesson pane, terminal, ASCII tree, manual |
+
+Levels are split in half on purpose. Markdown is the right medium for lesson
+copy — no backtick escaping, readable in a diff — and TypeScript is the right
+medium for a win condition. `app/level/[id]/page.tsx` reads the markdown on the
+server and hands it to the client, which merges it with `LEVEL_RULES`.
 
 ### Commands are pure-ish functions
 
@@ -53,28 +64,77 @@ to render.
 
 ## Adding a level
 
-Drop a file in `lib/levels/` and register it in `lib/levels/index.ts`:
+Two files. First the prose, as `content/levels/05-globbing.md`:
 
-```ts
-export const level5: Level = {
-  id: 5,
-  title: "…",
-  lesson: "markdown",
-  prompt: "one-line objective",
-  initialState: { startingPath: "/home/shelly", fileTree: homeAt({ /* … */ }) },
-  allowedCommands: { ls: { hint: "list directory contents" } },
-  winCondition: {
-    requiredOperators: ["|"],        // asserted against the AST
-    requiredCommands: ["grep"],      // asserted against the AST
-    check: ({ fs, stdout }) => true, // asserted against the resulting state
-  },
-  successMessage: "…",
-};
+```md
+---
+id: 5
+chapter: globbing
+title: Wildcards
+description: One pattern, many files.
+prompt: "Delete every `.tmp` file in `~/scratch` with a single command."
+success: "…"
+focus:
+  rm: remove files
+hints:
+  - "You do not need to name each file."
+  - "`*` stands in for any run of characters."
+---
+
+Lesson body, in plain markdown.
 ```
 
-A command absent from `allowedCommands` is intercepted before it runs, with a
-soft "not needed for this puzzle" message rather than an error — the guardrail
-is a nudge, not a wall. `tldr`, `help`, `clear` and `reset` always work.
+Then the rules, in `lib/levels/rules.ts`:
+
+```ts
+5: {
+  startingPath: "/home/shelly/scratch",
+  fileTree: homeAt({ scratch: dir({ /* … */ }) }),
+  winCondition: {
+    requiredCommands: ["rm"],            // asserted against the AST
+    check: ({ fs }) => /* … */ true,     // asserted against the resulting state
+  },
+  diagnostics: [{ when: ({ lineCommands }) => /* … */ false, say: "…" }],
+  solutions: [["rm *.tmp"]],
+  nearMisses: [["rm a.tmp"]],
+},
+```
+
+`allowedCommands` is **derived, never authored**: a level allows everything its
+chapter and all earlier chapters unlock (`lib/levels/chapters.ts`). The `focus`
+map only supplies the friendlier one-liner `help` prints. A command outside that
+set is intercepted before it runs, with a soft "not needed for this puzzle"
+message rather than an error — the guardrail is a nudge, not a wall. `tldr`,
+`help`, `hint`, `solve`, `clear` and `reset` always work.
+
+The loader validates as it reads: an unknown chapter, a missing field, a `focus`
+command the chapter never unlocked, or a level with content but no rules all
+fail the build rather than shipping a broken level.
+
+## Getting unstuck
+
+Five rungs, from passive to explicit:
+
+1. `tldr <cmd>` — real examples in the right pane. Looking things up *is* the
+   skill being taught, so this is always available.
+2. **A near-miss diagnostic.** When the shape of an attempt is wrong in a
+   specific way, the level says so specifically — "you printed the text to the
+   screen; now point that output at a file" — instead of staying silent.
+3. **An unprompted nudge** after three attempts without progress.
+4. `hint` — two or three per level, each more specific than the last.
+5. `solve` — types the next line of the canonical solution *into the prompt*
+   rather than printing it, so the answer still passes through your fingers.
+   Levels finished this way are marked "with help" on the map.
+
+## Testing
+
+`tests/levels.test.ts` iterates the whole catalog and asserts, for every level:
+each canonical solution solves it, no near miss solves it, every near miss gets
+either a diagnostic or a shell error, the prose is actually authored, and every
+unlocked command is implemented and documented.
+
+That contract is what makes the catalog safe to grow: a broken level fails the
+suite rather than someone's afternoon.
 
 ## Divergences from the PRD
 
@@ -88,5 +148,5 @@ is a nudge, not a wall. `tldr`, `help`, `clear` and `reset` always work.
 
 ## Not built yet
 
-- Progress is in memory only — a reload starts at level 1.
-- No `vim` module and no native CLI build (both are V2 in the PRD).
+- Chapters 5–12 (see [docs/ROADMAP.md](docs/ROADMAP.md)).
+- No `vim` module and no native CLI build — both need their own engine.

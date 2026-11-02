@@ -1,0 +1,183 @@
+.page {
+  max-width: 54rem;
+  margin: 0 auto;
+  padding: 4rem 1.75rem 6rem;
+}
+
+.hero {
+  padding-bottom: 2.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.eyebrow {
+  margin: 0 0 1.25rem;
+  color: var(--fg);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.sigil {
+  color: var(--green);
+  margin-right: 0.4rem;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(1.4rem, 3.5vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+.lede {
+  margin: 0.9rem 0 0;
+  max-width: 58ch;
+  color: var(--fg-dim);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  margin-top: 1.75rem;
+}
+
+.start {
+  padding: 0.45rem 1.1rem;
+  border: 1px solid var(--green);
+  border-radius: 3px;
+  color: var(--green);
+  text-decoration: none;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.start:hover {
+  background: var(--green);
+  color: var(--bg);
+}
+
+.progress {
+  color: var(--fg-muted);
+  font-size: 0.85rem;
+}
+
+.chapters {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.chapter {
+  padding: 1.75rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.chapter[data-status="planned"] {
+  opacity: 0.45;
+}
+
+.chapterHead {
+  display: flex;
+  align-items: baseline;
+  gap: 0.85rem;
+}
+
+.chapterIndex {
+  color: var(--fg-muted);
+  font-size: 0.8rem;
+}
+
+.chapterTitle {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--fg);
+}
+
+.soon {
+  margin-left: auto;
+  color: var(--fg-muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.chapterSummary {
+  margin: 0.2rem 0 0 2.2rem;
+  color: var(--fg-muted);
+  font-size: 0.88rem;
+}
+
+.levels {
+  list-style: none;
+  margin: 0.9rem 0 0 2.2rem;
+  padding: 0;
+}
+
+.level {
+  display: flex;
+  align-items: baseline;
+  gap: 0.85rem;
+  padding: 0.4rem 0.6rem;
+  margin-left: -0.6rem;
+  border-radius: 3px;
+  text-decoration: none;
+  color: var(--fg-dim);
+  transition: background 120ms ease;
+}
+
+.level:hover {
+  background: var(--bg-highlight);
+}
+
+.levelMark {
+  color: var(--fg-muted);
+  width: 1ch;
+  flex-shrink: 0;
+}
+
+.level[data-solved] .levelMark {
+  color: var(--green);
+}
+
+.levelName {
+  color: var(--fg);
+  flex-shrink: 0;
+}
+
+.levelDescription {
+  color: var(--fg-muted);
+  font-size: 0.85rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.helped {
+  margin-left: auto;
+  flex-shrink: 0;
+  color: var(--yellow);
+  font-size: 0.72rem;
+}
+
+.footer {
+  margin-top: 2.5rem;
+  color: var(--fg-muted);
+  font-size: 0.82rem;
+  max-width: 58ch;
+}
+
+.footer p {
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 2.5rem 1.25rem 4rem;
+  }
+
+  .levelDescription {
+    display: none;
+  }
+}
