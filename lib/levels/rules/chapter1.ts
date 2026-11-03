@@ -1,5 +1,5 @@
-import { HOME } from "@/lib/fs/vfs";
-import type { LevelRules } from "@/lib/types";
+import { HOME, lookup, resolve } from "@/lib/fs/vfs";
+import type { LevelRules, Script, VirtualFileSystem } from "@/lib/types";
 import { operandsOf, ran } from "../assert";
 import { orientationWorld } from "../worlds";
 
@@ -7,6 +7,28 @@ const PROJECTS = `${HOME}/projects`;
 const WEB = `${PROJECTS}/web`;
 const SRC = `${WEB}/src`;
 const NOTES = `${HOME}/notes`;
+
+/**
+ * `ls -a` aimed at the home directory — either with no path at all while
+ * standing there, or with a path that resolves to it. Without this, `ls -a
+ * projects` would satisfy a level that asks about hidden entries in *home*.
+ */
+const revealedHiddenAtHome = (submissions: Parameters<typeof ran>[0]) =>
+  ran(submissions, "ls", {
+    flags: ["a"],
+    where: (command, cwd) => {
+      const operands = operandsOf(command);
+      if (operands.length === 0) return cwd === HOME;
+      return operands.every((operand) => resolve(cwd, operand) === HOME);
+    },
+  });
+
+/** True when the submitted line pointed `ls` at a path that is not there. */
+const lsMissedItsTarget = (ast: Script, cwd: string, fs: VirtualFileSystem) =>
+  ran([{ script: ast, cwd }], "ls", {
+    where: (command, from) =>
+      operandsOf(command).some((operand) => !lookup(fs, resolve(from, operand))),
+  });
 
 /** True when a `cd` in this level was given an absolute path. */
 const usedAbsoluteCd = (submissions: Parameters<typeof ran>[0]) =>
@@ -51,17 +73,21 @@ export const CHAPTER_1_RULES: Record<number, LevelRules> = {
 
     winCondition: {
       check: ({ submissions }) =>
-        ran(submissions, "ls", { flags: ["a"] }) &&
+        revealedHiddenAtHome(submissions) &&
         ran(submissions, "ls", { operandPaths: [PROJECTS] }),
     },
 
     diagnostics: [
       {
+        when: ({ ast, cwd, fs }) => lsMissedItsTarget(ast, cwd, fs),
+        say: "That path does not exist from where you are standing. You are *already in* your home directory — `ls -a` on its own lists what is here.",
+      },
+      {
         when: ({ cwd }) => cwd !== HOME,
         say: "You moved. The point is to look without going: `ls` takes a path, so you can read `projects` from here.",
       },
       {
-        when: ({ submissions }) => !ran(submissions, "ls", { flags: ["a"] }),
+        when: ({ submissions }) => !revealedHiddenAtHome(submissions),
         say: "Plain `ls` skips every name that begins with a dot. There is a one-letter flag that stops it doing that.",
       },
       {
@@ -75,7 +101,14 @@ export const CHAPTER_1_RULES: Record<number, LevelRules> = {
       ["ls -la", "ls ./projects"],
       ["ls -a", "ls ~/projects"],
     ],
-    nearMisses: [["ls"], ["ls -a"], ["cd projects", "ls"], ["ls projects"]],
+    nearMisses: [
+      ["ls"],
+      ["ls -a"],
+      ["ls -a home"],
+      ["ls -a projects", "ls projects"],
+      ["cd projects", "ls"],
+      ["ls projects"],
+    ],
   },
 
   3: {

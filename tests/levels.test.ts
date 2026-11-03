@@ -24,7 +24,9 @@ function play(level: Level, lines: string[]) {
   lines.forEach((line, index) => {
     const before = cwd;
     const result = evaluate({ input: line, fs, cwd, prevCwd, level });
-    if (!result.blocked && result.ast) submissions.push({ script: result.ast, cwd: before });
+    if (!result.blocked && result.ast && result.status !== "error") {
+      submissions.push({ script: result.ast, cwd: before });
+    }
     fs = result.fs;
     cwd = result.cwd;
     prevCwd = result.prevCwd;
@@ -108,7 +110,9 @@ for (const level of LEVELS) {
       for (const line of attempt) {
         const before = cwd;
         const result = evaluate({ input: line, fs, cwd, prevCwd, level });
-        if (!result.blocked && result.ast) submissions.push({ script: result.ast, cwd: before });
+        if (!result.blocked && result.ast && result.status !== "error") {
+      submissions.push({ script: result.ast, cwd: before });
+    }
         fs = result.fs;
         cwd = result.cwd;
         prevCwd = result.prevCwd;

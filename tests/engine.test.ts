@@ -24,7 +24,9 @@ function session(level: Level, lines: string[]) {
   for (const line of lines) {
     const before = cwd;
     last = evaluate({ input: line, fs, cwd, prevCwd, level });
-    if (!last.blocked && last.ast) submissions.push({ script: last.ast, cwd: before });
+    if (!last.blocked && last.ast && last.status !== "error") {
+      submissions.push({ script: last.ast, cwd: before });
+    }
     fs = last.fs;
     cwd = last.cwd;
     prevCwd = last.prevCwd;

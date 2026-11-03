@@ -267,8 +267,13 @@ export const useShellStore = create<ShellStore>()(
         const operatorsUsed = result.blocked
           ? state.operatorsUsed
           : [...new Set([...state.operatorsUsed, ...result.operators])];
+        /*
+         * Only lines that actually ran count. A command that errored did not
+         * show the player anything, so recording it would let `ran()` report
+         * progress the player never made.
+         */
         const submissions =
-          result.blocked || !result.ast
+          result.blocked || !result.ast || result.status === "error"
             ? state.submissions
             : [...state.submissions, { script: result.ast, cwd: state.currentDirectory }];
 
