@@ -32,13 +32,20 @@ export function buildLevels(content: LevelContent[]): Level[] {
 
 /**
  * The catalog is static, but it is read from disk on the server and handed to
- * the client as props, so it is installed once per document rather than being
+ * the client as props, so it is installed at render time rather than being
  * importable directly from browser code.
  */
 let catalog: Level[] = [];
+let installedFrom: LevelContent[] | null = null;
 
+/**
+ * Idempotent: safe to call on every render. It rebuilds only when handed a
+ * different content array — which also means a module reload during
+ * development repopulates the catalog instead of leaving it empty.
+ */
 export function hydrateCatalog(content: LevelContent[]): void {
-  if (catalog.length > 0) return;
+  if (installedFrom === content && catalog.length > 0) return;
+  installedFrom = content;
   catalog = buildLevels(content);
 }
 

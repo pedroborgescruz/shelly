@@ -4,9 +4,17 @@ An interactive, web-based game that teaches the Unix shell by making you use one
 Guardrailed puzzles, grouped into chapters, working through the command-line
 ground of [The Missing Semester](https://missing.csail.mit.edu/).
 
-Four levels are playable today — orientation, manipulation, redirection and
-pipes. See [docs/ROADMAP.md](docs/ROADMAP.md) for the other eleven chapters and
-the order they land in.
+**29 levels across 5 chapters** are playable today:
+
+1. **Orientation** — `pwd` `ls` `cd`, absolute vs relative paths, `..` and `~`
+2. **Making and breaking** — `mkdir -p` `touch` `cp` `mv` `rm -r`, dotfiles
+3. **Reading** — `cat` `head` `tail` `wc`, and passing lists of files
+4. **Streams** — `>` `>>` `<`, quoting, and why redirection is not an `echo` feature
+5. **Pipes and filters** — `|` `grep` `sort` `uniq -c` `cut` `tr`, ending on the
+   extract-group-count-rank pipeline
+
+See [docs/ROADMAP.md](docs/ROADMAP.md) for the seven chapters still to come, and
+for which Missing Semester lectures this engine can and cannot simulate.
 
 ```bash
 npm install
@@ -34,10 +42,12 @@ win condition asserts on the resulting **state**, not on the text typed.
 | --- | --- |
 | `lib/parser/` | `tokenize.ts` (words, quotes, operators) and `parse.ts` (the AST) |
 | `lib/fs/vfs.ts` | The virtual filesystem: path resolution, mutations, ASCII tree rendering |
-| `lib/commands/` | One implementation per command — `pwd`, `ls`, `cd`, `mkdir`, `touch`, `echo`, `cat`, `grep`, `wc`, `head`, `tail`, `tldr`, `clear` |
+| `lib/commands/` | One implementation per command — `pwd` `ls` `cd` `mkdir` `touch` `cp` `mv` `rm` `echo` `cat` `grep` `wc` `sort` `uniq` `cut` `tr` `tee` `head` `tail` `tldr` `clear` |
 | `lib/evaluator.ts` | Guardrails, pipelines, redirection, `&&`/`\|\|`, and the win check inputs |
 | `content/levels/*.md` | **The prose half of a level**: lesson, objective, hints, success line |
-| `lib/levels/rules.ts` | **The executable half**: starting world, win condition, diagnostics, solutions |
+| `lib/levels/rules/` | **The executable half**, one file per chapter: starting world, win condition, diagnostics, solutions |
+| `lib/levels/worlds.ts` | Starting filesystems shared across a chapter |
+| `lib/levels/assert.ts` | AST helpers for levels that only read and so change nothing |
 | `lib/levels/chapters.ts` | The curriculum spine, and which commands each chapter unlocks |
 | `lib/tldr.ts` | The abridged manual pages shown in the right pane |
 | `store/useShellStore.ts` | Zustand "kernel": filesystem, cwd, history, progress, help ladder |
@@ -84,7 +94,7 @@ hints:
 Lesson body, in plain markdown.
 ```
 
-Then the rules, in `lib/levels/rules.ts`:
+Then the rules, in the chapter's file under `lib/levels/rules/`:
 
 ```ts
 5: {
@@ -146,7 +156,22 @@ suite rather than someone's afternoon.
   `requiredCommands` keep the AST assertions where they matter (you *must* use a
   pipe to pass level 4), and a `check` predicate handles the rest.
 
+## Levels that change nothing
+
+A level about `cd` or `ls` leaves the filesystem exactly as it found it, so
+there is no state to assert on. Those win conditions read `submissions` instead
+— every accepted line this level, parsed, with the directory it ran from:
+
+```ts
+check: ({ cwd, submissions }) =>
+  cwd === NOTES && ran(submissions, "ls", { operandPaths: [SRC] }),
+```
+
+`ran` works on the AST, never on the raw text, so `ls -la`, `ls -a -l` and
+`ls -al` are one assertion — and `ls ../projects/web/src`, `ls ~/projects/web/src`
+and the absolute path all resolve to the same answer.
+
 ## Not built yet
 
-- Chapters 5–12 (see [docs/ROADMAP.md](docs/ROADMAP.md)).
+- Chapters 6–12 (see [docs/ROADMAP.md](docs/ROADMAP.md)).
 - No `vim` module and no native CLI build — both need their own engine.

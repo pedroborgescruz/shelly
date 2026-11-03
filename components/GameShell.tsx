@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { hydrateCatalog } from "@/lib/levels";
 import type { LevelContent } from "@/lib/types";
 import { useShellStore } from "@/store/useShellStore";
@@ -17,17 +16,20 @@ export interface GameProps {
 
 /**
  * Installs the catalog and starts the requested level before anything reads the
- * store. Game itself deliberately subscribes to nothing — the store is written
- * to during this render, and only its children may observe the result.
+ * store.
+ *
+ * Both calls are idempotent and run in the render body rather than in a
+ * one-shot initialiser, so a module reload — or any other reason the modules
+ * lose their state while React keeps its own — repairs itself on the next
+ * render instead of leaving the game stranded. GameShell deliberately
+ * subscribes to nothing: it writes to the store during this render, and only
+ * its children may observe the result.
  */
 export default function GameShell({ content, levelId }: GameProps) {
-  useState(() => {
-    hydrateCatalog(content);
-    if (useShellStore.getState().currentLevelId !== levelId) {
-      useShellStore.getState().loadLevel(levelId);
-    }
-    return null;
-  });
+  hydrateCatalog(content);
+  if (useShellStore.getState().currentLevelId !== levelId) {
+    useShellStore.getState().loadLevel(levelId);
+  }
 
   return (
     <main className={styles.shell}>

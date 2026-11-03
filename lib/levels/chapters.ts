@@ -4,14 +4,15 @@ import type { Chapter } from "@/lib/types";
  * The curriculum spine. `planned` chapters have no levels yet but still show
  * on the map, so the shape of the course is visible from level 1.
  *
- * See docs/ROADMAP.md for what each planned chapter is meant to cover.
+ * `unlocks` is cumulative in effect: a level allows everything unlocked by its
+ * own chapter and every earlier one. See docs/ROADMAP.md.
  */
 export const CHAPTERS: Chapter[] = [
   {
     id: "orientation",
     index: 1,
     title: "Orientation",
-    summary: "Where you are, and what is around you.",
+    summary: "Where you are, and how to move.",
     unlocks: ["pwd", "ls", "cd"],
     status: "ready",
   },
@@ -19,29 +20,37 @@ export const CHAPTERS: Chapter[] = [
     id: "manipulation",
     index: 2,
     title: "Making and breaking",
-    summary: "Create and remove files and directories.",
-    unlocks: ["mkdir", "touch"],
+    summary: "Create, copy, rename and remove.",
+    unlocks: ["mkdir", "touch", "cp", "mv", "rm"],
+    status: "ready",
+  },
+  {
+    id: "reading",
+    index: 3,
+    title: "Reading",
+    summary: "Look inside files without opening an editor.",
+    unlocks: ["cat", "head", "tail", "wc"],
     status: "ready",
   },
   {
     id: "streams",
-    index: 3,
+    index: 4,
     title: "Streams",
     summary: "Where a command's output actually goes.",
-    unlocks: ["echo", "cat"],
+    unlocks: ["echo"],
     status: "ready",
   },
   {
     id: "pipes",
-    index: 4,
+    index: 5,
     title: "Pipes and filters",
     summary: "Small tools, composed into one that does the job.",
-    unlocks: ["grep", "wc", "head", "tail"],
+    unlocks: ["grep", "sort", "uniq", "cut", "tr", "tee"],
     status: "ready",
   },
   {
     id: "globbing",
-    index: 5,
+    index: 6,
     title: "Globbing",
     summary: "Wildcards, and why quoting matters.",
     unlocks: [],
@@ -49,7 +58,7 @@ export const CHAPTERS: Chapter[] = [
   },
   {
     id: "finding",
-    index: 6,
+    index: 7,
     title: "Finding things",
     summary: "find, xargs, and searching a whole tree.",
     unlocks: [],
@@ -57,7 +66,7 @@ export const CHAPTERS: Chapter[] = [
   },
   {
     id: "permissions",
-    index: 7,
+    index: 8,
     title: "Permissions",
     summary: "Who may read, write and execute — and $PATH.",
     unlocks: [],
@@ -65,7 +74,7 @@ export const CHAPTERS: Chapter[] = [
   },
   {
     id: "variables",
-    index: 8,
+    index: 9,
     title: "Variables and substitution",
     summary: "$foo, quoting, $(…) and exit codes.",
     unlocks: [],
@@ -73,7 +82,7 @@ export const CHAPTERS: Chapter[] = [
   },
   {
     id: "scripting",
-    index: 9,
+    index: 10,
     title: "Scripting",
     summary: "if, for, while, arguments and functions.",
     unlocks: [],
@@ -81,7 +90,7 @@ export const CHAPTERS: Chapter[] = [
   },
   {
     id: "wrangling",
-    index: 10,
+    index: 11,
     title: "Wrangling",
     summary: "sed, awk, and taking a log file apart.",
     unlocks: [],
@@ -89,7 +98,7 @@ export const CHAPTERS: Chapter[] = [
   },
   {
     id: "jobs",
-    index: 11,
+    index: 12,
     title: "Jobs and processes",
     summary: "Backgrounding, listing and killing work.",
     unlocks: [],

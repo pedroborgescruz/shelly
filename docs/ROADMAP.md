@@ -29,20 +29,20 @@ people at the lectures.
 
 Numbers are target level counts, not promises.
 
-| # | Chapter | Teaches | Levels |
-| --- | --- | --- | --- |
-| 1 | Orientation | `pwd` `ls` `cd`, absolute vs relative paths, `~` | 5 |
-| 2 | Making and breaking | `mkdir` `touch` `cp` `mv` `rm`, `-r`, dotfiles | 6 |
-| 3 | Reading | `cat` `head` `tail` `wc` `file` `du` | 5 |
-| 4 | Streams | stdout vs stderr, `>` `>>` `2>` `<`, `/dev/null`, `tee` | 6 |
-| 5 | Pipes and filters | `\|` `grep` `sort` `uniq -c` `cut` `tr` — ends on the word-frequency one-liner | 7 |
-| 6 | Globbing | `*` `?` `[]` `{}` and why quoting matters | 5 |
-| 7 | Finding things | `find -name/-type/-size`, `-exec`, `xargs`, `grep -r` | 6 |
-| 8 | Permissions | `ls -l`, `chmod`, shebangs, `./script.sh`, `$PATH` | 5 |
-| 9 | Variables and substitution | `foo=bar`, `$foo`, `"$foo"` vs `$foo`, `$(…)`, `$?`, `&&` `\|\|` | 6 |
-| 10 | Scripting | `if` `for` `while`, `$1` `$@`, functions | 7 |
-| 11 | Wrangling | `sed` `awk` `paste` `column`, log-analysis capstone | 7 |
-| 12 | Jobs and processes | `ps`, `&`, `jobs`, `fg`, `kill`, Ctrl-C/Ctrl-Z | 5 |
+| # | Chapter | Teaches | Levels | Status |
+| --- | --- | --- | --- | --- |
+| 1 | Orientation | `pwd` `ls` `cd`, absolute vs relative paths, `~`, `..` | 5 | **built** |
+| 2 | Making and breaking | `mkdir -p` `touch` `cp` `mv` `rm -r`, dotfiles | 6 | **built** |
+| 3 | Reading | `cat` `head` `tail` `wc`, lists of files | 5 | **built** |
+| 4 | Streams | `>` `>>` `<`, quoting, redirecting any command | 6 | **built** |
+| 5 | Pipes and filters | `\|` `grep` `sort` `uniq -c` `cut` `tr` `tee` — ends on the frequency pipeline | 7 | **built** |
+| 6 | Globbing | `*` `?` `[]` `{}` and why quoting matters | 5 | planned |
+| 7 | Finding things | `find -name/-type/-size`, `-exec`, `xargs`, `grep -r` | 6 | planned |
+| 8 | Permissions | `ls -l`, `chmod`, shebangs, `./script.sh`, `$PATH` | 5 | planned |
+| 9 | Variables and substitution | `foo=bar`, `$foo`, `"$foo"` vs `$foo`, `$(…)`, `$?`, `&&` `\|\|` | 6 | planned |
+| 10 | Scripting | `if` `for` `while`, `$1` `$@`, functions | 7 | planned |
+| 11 | Wrangling | `sed` `awk` `paste` `column`, log-analysis capstone | 7 | planned |
+| 12 | Jobs and processes | `ps`, `&`, `jobs`, `fg`, `kill`, Ctrl-C/Ctrl-Z | 5 | planned |
 
 Then, as separate tracks: **Vim**, and **Git**.
 
@@ -51,11 +51,12 @@ Then, as separate tracks: **Vim**, and **Git**.
 Ordered so that each phase ships playable levels and only pays for engine work
 when the next chapter actually needs it.
 
-- **Phase 0 — Foundation.** No new levels. Lessons move to markdown, levels get
-  routes and a chapter map, progress persists, the help ladder lands, and a
-  generic suite asserts every level against canonical solutions and near misses.
-- **Phase 1 — Chapters 1–5** (~29 levels). Needs `cp mv rm sort uniq cut tr tee`
-  and nothing from the parser.
+- ~~**Phase 0 — Foundation.**~~ **Done.** Lessons in markdown, per-level routes,
+  a chapter map, persisted progress, the help ladder, and a generic suite that
+  asserts every level against canonical solutions and near misses.
+- ~~**Phase 1 — Chapters 1–5.**~~ **Done — 29 levels.** Added `cp mv rm sort
+  uniq cut tr tee`, and `submissions` to the win-condition inputs so read-only
+  levels have something to assert on. No parser changes were needed.
 - **Phase 2 — Globbing and quoting** in the parser → chapters 6–7, plus `find`
   and `xargs`.
 - **Phase 3 — Permission bits and `$PATH`** in the VFS → chapter 8.

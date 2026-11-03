@@ -1,7 +1,7 @@
 .header {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1.25rem;
   padding: 0 1.25rem;
   height: 3rem;
   border-bottom: 1px solid var(--border);
@@ -11,10 +11,10 @@
 
 .brand {
   display: flex;
-  text-decoration: none;
   align-items: baseline;
   gap: 0.5rem;
-  min-width: 0;
+  flex-shrink: 0;
+  text-decoration: none;
 }
 
 .sigil {
@@ -27,63 +27,111 @@
   letter-spacing: 0.02em;
 }
 
-.tagline {
-  color: var(--fg-muted);
-  font-size: 0.8rem;
-  white-space: nowrap;
-}
-
-.levels {
+.chapter {
   display: flex;
-  gap: 0.25rem;
-  margin-left: auto;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.levels::-webkit-scrollbar {
-  display: none;
-}
-
-.level {
-  display: flex;
-  text-decoration: none;
   align-items: baseline;
   gap: 0.5rem;
-  padding: 0.25rem 0.7rem;
-  border: 1px solid transparent;
-  border-radius: 3px;
-  color: var(--fg-muted);
-  white-space: nowrap;
-  transition: color 120ms ease, border-color 120ms ease, background 120ms ease;
-}
-
-.level:hover {
+  flex-shrink: 0;
+  padding-left: 1.25rem;
+  border-left: 1px solid var(--border);
   color: var(--fg-dim);
-  background: var(--bg-highlight);
+  font-size: 0.85rem;
+  text-decoration: none;
+  white-space: nowrap;
 }
 
-.level[data-solved] .levelNumber {
-  color: var(--green);
-}
-
-.level[data-current] {
-  border-color: var(--border-strong);
-  background: var(--bg-raised);
+.chapter:hover {
   color: var(--fg);
 }
 
-.levelNumber {
-  font-size: 0.78rem;
+.chapterIndex {
   color: var(--fg-muted);
+  font-size: 0.78rem;
 }
 
-.level[data-current] .levelNumber {
+.track {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 0 0.5rem;
+}
+
+.track::-webkit-scrollbar {
+  display: none;
+}
+
+.dot {
+  flex-shrink: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--border-strong);
+  transition: background 120ms ease, transform 120ms ease;
+}
+
+.dot:hover {
+  background: var(--fg-dim);
+  transform: scale(1.4);
+}
+
+.dot[data-solved] {
+  background: var(--green);
+}
+
+.dot[data-current] {
+  background: var(--blue);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--blue) 25%, transparent);
+}
+
+/* A wider gap wherever a new chapter begins. */
+.dot[data-chapter-start] + .dot,
+.dot[data-chapter-start] {
+  margin-left: 0;
+}
+
+.dot[data-chapter-start]:not(:first-child) {
+  margin-left: 0.6rem;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.counter {
+  color: var(--fg-muted);
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--fg-dim);
+  text-decoration: none;
+  line-height: 1;
+  transition: color 120ms ease, border-color 120ms ease;
+}
+
+.step:hover {
   color: var(--blue);
+  border-color: var(--blue);
 }
 
-.levelTitle {
-  font-size: 0.82rem;
+.stepDisabled {
+  opacity: 0.3;
+  pointer-events: none;
 }
 
 .reset {
@@ -102,8 +150,8 @@
 }
 
 @media (max-width: 760px) {
-  .tagline,
-  .levelTitle {
+  .chapter,
+  .counter {
     display: none;
   }
 }

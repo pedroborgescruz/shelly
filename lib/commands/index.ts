@@ -14,6 +14,8 @@ import {
   touch as touchAt,
 } from "@/lib/fs/vfs";
 import { tldrIndex, tldrPage } from "@/lib/tldr";
+import { cp, mv, rm } from "./files";
+import { cut, sort, tee, tr, uniq } from "./text";
 import {
   fail,
   fromLines,
@@ -424,10 +426,18 @@ export const COMMANDS: Record<string, CommandImpl> = {
   cd,
   mkdir,
   touch,
+  cp,
+  mv,
+  rm,
   echo,
   cat,
   grep,
   wc,
+  sort,
+  uniq,
+  cut,
+  tr,
+  tee,
   head: sliceLines("head"),
   tail: sliceLines("tail"),
   tldr,

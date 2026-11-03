@@ -1,18 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { buildLevels, hydrateCatalog, levelsByChapter } from "@/lib/levels";
+import { allLevels, hydrateCatalog, levelsByChapter } from "@/lib/levels";
 import type { LevelContent } from "@/lib/types";
 import { useIsHydrated } from "@/lib/useIsHydrated";
 import { useShellStore } from "@/store/useShellStore";
 import styles from "./ChapterMap.module.css";
 
 export function ChapterMap({ content }: { content: LevelContent[] }) {
-  const levels = useState(() => {
-    hydrateCatalog(content);
-    return buildLevels(content);
-  })[0];
+  hydrateCatalog(content);
+  const levels = allLevels();
 
   const solvedLevelIds = useShellStore((state) => state.solvedLevelIds);
   const helpedLevelIds = useShellStore((state) => state.helpedLevelIds);

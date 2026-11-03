@@ -158,6 +158,44 @@ export function writeFile(
   return true;
 }
 
+/** Detach a node from its parent and return it, or null if it was not there. */
+export function removeNode(fs: VirtualFileSystem, absPath: string): VNode | null {
+  const abs = normalize(absPath);
+  if (abs === "/") return null;
+
+  const parent = parentDir(fs, abs);
+  if (!parent) return null;
+
+  const name = basename(abs);
+  const node = parent.children[name];
+  if (!node) return null;
+
+  delete parent.children[name];
+  return node;
+}
+
+/**
+ * Attach a node at an absolute path, creating nothing along the way.
+ * Returns false when the parent is missing or is not a directory.
+ */
+export function putNode(fs: VirtualFileSystem, absPath: string, node: VNode): boolean {
+  const abs = normalize(absPath);
+  if (abs === "/") return false;
+
+  const parent = parentDir(fs, abs);
+  if (!parent) return false;
+
+  parent.children[basename(abs)] = node;
+  return true;
+}
+
+/** True when `ancestor` contains `descendant`, so `cp -r a a/b` can be refused. */
+export function contains(ancestor: string, descendant: string): boolean {
+  const a = normalize(ancestor);
+  const d = normalize(descendant);
+  return d === a || d.startsWith(a === "/" ? "/" : a + "/");
+}
+
 /* ------------------------------- ASCII tree ------------------------------- */
 
 export interface TreeLine {

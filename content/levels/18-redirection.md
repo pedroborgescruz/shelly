@@ -1,5 +1,5 @@
 ---
-id: 3
+id: 18
 chapter: streams
 title: Redirection
 description: Point a command's output somewhere other than the screen.

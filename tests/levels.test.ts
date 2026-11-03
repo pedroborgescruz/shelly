@@ -6,7 +6,7 @@ import { CHAPTERS, buildLevels, levelsByChapter } from "@/lib/levels";
 import { loadLevelContent } from "@/lib/levels/loadContent";
 import { isKnownCommand } from "@/lib/commands";
 import { TLDR_PAGES } from "@/lib/tldr";
-import type { Level, VirtualFileSystem, WinCheckArgs } from "@/lib/types";
+import type { Level, Submission, VirtualFileSystem, WinCheckArgs } from "@/lib/types";
 
 const LEVELS = buildLevels(loadLevelContent());
 
@@ -17,11 +17,14 @@ function play(level: Level, lines: string[]) {
   let prevCwd: string | null = null;
   const commandsRun: string[] = [];
   const operatorsUsed: string[] = [];
+  const submissions: Submission[] = [];
 
   let solvedAt = -1;
 
   lines.forEach((line, index) => {
+    const before = cwd;
     const result = evaluate({ input: line, fs, cwd, prevCwd, level });
+    if (!result.blocked && result.ast) submissions.push({ script: result.ast, cwd: before });
     fs = result.fs;
     cwd = result.cwd;
     prevCwd = result.prevCwd;
@@ -44,6 +47,7 @@ function play(level: Level, lines: string[]) {
       operatorsUsed,
       lineCommands: result.commandNames,
       lineOperators: result.operators,
+      submissions,
     };
 
     const { winCondition } = level;
@@ -98,10 +102,13 @@ for (const level of LEVELS) {
       let prevCwd: string | null = null;
       const commandsRun: string[] = [];
       const operatorsUsed: string[] = [];
+      const submissions: Submission[] = [];
       let answered = false;
 
       for (const line of attempt) {
+        const before = cwd;
         const result = evaluate({ input: line, fs, cwd, prevCwd, level });
+        if (!result.blocked && result.ast) submissions.push({ script: result.ast, cwd: before });
         fs = result.fs;
         cwd = result.cwd;
         prevCwd = result.prevCwd;
@@ -121,6 +128,7 @@ for (const level of LEVELS) {
           operatorsUsed,
           lineCommands: result.commandNames,
           lineOperators: result.operators,
+          submissions,
         };
 
         if (result.status === "error") answered = true;

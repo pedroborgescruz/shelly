@@ -94,6 +94,13 @@ export interface CommandBehavior {
   hint?: string;
 }
 
+/** One accepted line this level, with the directory it was typed from. */
+export interface Submission {
+  script: Script;
+  /** Working directory *before* the line ran, for resolving its arguments. */
+  cwd: string;
+}
+
 export interface WinCheckArgs {
   /** The parsed script the user just submitted. */
   ast: Script;
@@ -111,6 +118,12 @@ export interface WinCheckArgs {
   lineCommands: string[];
   /** Operators in *this* submission only. */
   lineOperators: string[];
+  /**
+   * Every accepted line this level, oldest first. Levels that only read —
+   * navigating, listing, printing — have no filesystem change to assert on,
+   * so they assert on what was actually run instead.
+   */
+  submissions: Submission[];
 }
 
 export interface WinCondition {

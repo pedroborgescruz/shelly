@@ -62,6 +62,9 @@ export interface ParsedArgs {
 /**
  * Minimal POSIX-ish option parsing: bundled short flags (`-la`), flags that
  * take a value (`-n 5` or `-n5`), `--` to stop parsing.
+ *
+ * A bare `-3` is parsed as a flag too. Commands that accept it as a count
+ * shorthand (`head -3`) pull it out before calling this.
  */
 export function parseArgs(
   args: string[],
@@ -80,7 +83,7 @@ export function parseArgs(
       break;
     }
 
-    if (arg.length > 1 && arg.startsWith("-") && !/^-\d+$/.test(arg)) {
+    if (arg.length > 1 && arg.startsWith("-")) {
       const chars = arg.slice(1).split("");
       for (let j = 0; j < chars.length; j += 1) {
         const char = chars[j];

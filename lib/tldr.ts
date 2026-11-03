@@ -129,6 +129,88 @@ export const TLDR_PAGES: Record<string, TldrPage> = {
     ],
   },
 
+  cp: {
+    name: "cp",
+    description: "Copy files and directories.",
+    examples: [
+      { text: "Copy a file to a new name", command: "cp {{file}} {{copy}}" },
+      { text: "Copy a file into an existing directory", command: "cp {{file}} {{directory}}/" },
+      { text: "Copy a directory and everything inside it", command: "cp -r {{directory}} {{copy}}" },
+      { text: "Copy several files into a directory", command: "cp {{file1}} {{file2}} {{directory}}/" },
+    ],
+  },
+
+  mv: {
+    name: "mv",
+    description: "Move or rename files and directories. One command, because renaming is moving.",
+    examples: [
+      { text: "Rename a file", command: "mv {{old}} {{new}}" },
+      { text: "Move a file into a directory", command: "mv {{file}} {{directory}}/" },
+      { text: "Move several files at once", command: "mv {{file1}} {{file2}} {{directory}}/" },
+    ],
+  },
+
+  rm: {
+    name: "rm",
+    description: "Remove files and directories. There is no undo and no trash.",
+    examples: [
+      { text: "Remove a file", command: "rm {{file}}" },
+      { text: "Remove a directory and everything in it", command: "rm -r {{directory}}" },
+      { text: "Ignore files that do not exist", command: "rm -f {{file}}" },
+    ],
+  },
+
+  sort: {
+    name: "sort",
+    description: "Sort lines of text.",
+    examples: [
+      { text: "Sort a file alphabetically", command: "sort {{file}}" },
+      { text: "Sort numerically rather than as text", command: "sort -n {{file}}" },
+      { text: "Reverse the order", command: "sort -r {{file}}" },
+      { text: "Largest number first", command: "sort -rn {{file}}" },
+      { text: "Sort and drop duplicates", command: "sort -u {{file}}" },
+    ],
+  },
+
+  uniq: {
+    name: "uniq",
+    description: "Collapse repeated ADJACENT lines. Almost always used after sort.",
+    examples: [
+      { text: "Collapse runs of identical lines", command: "sort {{file}} | uniq" },
+      { text: "Prefix each line with how many times it occurred", command: "sort {{file}} | uniq -c" },
+      { text: "Show only the lines that repeated", command: "sort {{file}} | uniq -d" },
+    ],
+  },
+
+  cut: {
+    name: "cut",
+    description: "Pull columns out of each line.",
+    examples: [
+      { text: "Take the first space-separated field", command: "cut -d ' ' -f 1 {{file}}" },
+      { text: "Take several fields", command: "cut -d ',' -f {{1,3}} {{file}}" },
+      { text: "Take a range of fields", command: "cut -d ':' -f {{2-4}} {{file}}" },
+    ],
+  },
+
+  tr: {
+    name: "tr",
+    description: "Translate or delete characters. Reads standard input only.",
+    examples: [
+      { text: "Lowercase everything", command: "{{command}} | tr A-Z a-z" },
+      { text: "Replace one character with another", command: "{{command}} | tr {{' '}} {{'\\n'}}" },
+      { text: "Delete every matching character", command: "{{command}} | tr -d {{characters}}" },
+    ],
+  },
+
+  tee: {
+    name: "tee",
+    description: "Write standard input to a file AND pass it along the pipe.",
+    examples: [
+      { text: "Save output and keep it flowing", command: "{{command}} | tee {{file}}" },
+      { text: "Append instead of replacing", command: "{{command}} | tee -a {{file}}" },
+    ],
+  },
+
   tldr: {
     name: "tldr",
     description: "Show practical examples for a command — this very panel.",

@@ -18,10 +18,13 @@ function session(level: Level, lines: string[]) {
   let prevCwd: string | null = null;
   const commandsRun: string[] = [];
   const operatorsUsed: string[] = [];
+  const submissions: import("@/lib/types").Submission[] = [];
   let last = evaluate({ input: "", fs, cwd, prevCwd, level });
 
   for (const line of lines) {
+    const before = cwd;
     last = evaluate({ input: line, fs, cwd, prevCwd, level });
+    if (!last.blocked && last.ast) submissions.push({ script: last.ast, cwd: before });
     fs = last.fs;
     cwd = last.cwd;
     prevCwd = last.prevCwd;
@@ -31,7 +34,7 @@ function session(level: Level, lines: string[]) {
     }
   }
 
-  return { last, fs, cwd, commandsRun, operatorsUsed };
+  return { last, fs, cwd, commandsRun, operatorsUsed, submissions };
 }
 
 function solved(level: Level, lines: string[]) {
@@ -51,6 +54,7 @@ function solved(level: Level, lines: string[]) {
       operatorsUsed: run.operatorsUsed,
       lineCommands: run.last.commandNames,
       lineOperators: run.last.operators,
+      submissions: run.submissions,
     })
   );
 }
@@ -91,9 +95,12 @@ test("level 1: pwd prints the starting path", () => {
 test("level 1: ls hides dotfiles until -a", () => {
   const level = getLevel(1);
   assert.equal(session(level, ["ls"]).last.stdout.trim(), "notes  projects  README.md");
+  const unknown = session(level, ["sudo rm README.md"]).last;
+  assert.ok(unknown.blocked);
+  assert.match(unknown.output, /command not found/);
   const guarded = session(level, ["rm README.md"]).last;
   assert.ok(guarded.blocked);
-  assert.match(guarded.output, /command not found/);
+  assert.match(guarded.output, /not needed for this puzzle/);
 });
 
 test("level 1: needs both pwd and ls", () => {
@@ -103,86 +110,86 @@ test("level 1: needs both pwd and ls", () => {
 
 /* -------------------------------- Level 2 --------------------------------- */
 
-test("level 2: mkdir then touch solves it", () => {
-  assert.equal(solved(getLevel(2), ["mkdir src", "touch src/index.ts"]), true);
+test("level 6: mkdir then touch solves it", () => {
+  assert.equal(solved(getLevel(6), ["mkdir src", "touch src/index.ts"]), true);
 });
 
-test("level 2: mkdir -p accepts the equivalent one-liner", () => {
-  assert.equal(solved(getLevel(2), ["mkdir -p src", "touch ./src/index.ts"]), true);
+test("level 6: mkdir -p accepts the equivalent one-liner", () => {
+  assert.equal(solved(getLevel(6), ["mkdir -p src", "touch ./src/index.ts"]), true);
 });
 
-test("level 2: touch into a missing directory errors, tree untouched", () => {
-  const { last, fs } = session(getLevel(2), ["touch src/index.ts"]);
+test("level 6: touch into a missing directory errors, tree untouched", () => {
+  const { last, fs } = session(getLevel(6), ["touch src/index.ts"]);
   assert.match(last.output, /No such file or directory/);
   assert.equal(lookup(fs, "/home/shelly/projects/src"), null);
 });
 
-test("level 2: a guarded command is intercepted softly", () => {
-  const { last } = session(getLevel(2), ["grep hello hello.sh"]);
+test("level 6: a guarded command is intercepted softly", () => {
+  const { last } = session(getLevel(6), ["grep hello hello.sh"]);
   assert.ok(last.blocked);
   assert.match(last.output, /not needed for this puzzle/);
 });
 
-test("level 2: cd moves and cd - comes back", () => {
-  const { last, cwd } = session(getLevel(2), ["cd logs", "cd -"]);
+test("level 6: cd moves and cd - comes back", () => {
+  const { last, cwd } = session(getLevel(6), ["cd logs", "cd -"]);
   assert.equal(cwd, "/home/shelly/projects");
   assert.equal(last.status, "success");
 });
 
 /* -------------------------------- Level 3 --------------------------------- */
 
-test("level 3: echo with > writes the file", () => {
-  const { fs } = session(getLevel(3), [`echo ${SECRET} > .env`]);
+test("level 18: echo with > writes the file", () => {
+  const { fs } = session(getLevel(18), [`echo ${SECRET} > .env`]);
   assert.equal(readFile(fs, "/home/shelly/projects/.env"), SECRET + "\n");
 });
 
-test("level 3: quoted and absolute variants all solve it", () => {
-  assert.equal(solved(getLevel(3), [`echo "${SECRET}" > .env`]), true);
-  assert.equal(solved(getLevel(3), [`echo '${SECRET}' > ./.env`]), true);
-  assert.equal(solved(getLevel(3), [`echo ${SECRET} > /home/shelly/projects/.env`]), true);
+test("level 18: quoted and absolute variants all solve it", () => {
+  assert.equal(solved(getLevel(18), [`echo "${SECRET}" > .env`]), true);
+  assert.equal(solved(getLevel(18), [`echo '${SECRET}' > ./.env`]), true);
+  assert.equal(solved(getLevel(18), [`echo ${SECRET} > /home/shelly/projects/.env`]), true);
 });
 
-test("level 3: printing without redirecting does not solve it", () => {
-  assert.equal(solved(getLevel(3), [`echo ${SECRET}`]), false);
+test("level 18: printing without redirecting does not solve it", () => {
+  assert.equal(solved(getLevel(18), [`echo ${SECRET}`]), false);
 });
 
-test("level 3: > truncates and >> appends", () => {
-  const { fs } = session(getLevel(3), ["echo one > f", "echo two > f", "echo three >> f"]);
+test("level 18: > truncates and >> appends", () => {
+  const { fs } = session(getLevel(18), ["echo one > f", "echo two > f", "echo three >> f"]);
   assert.equal(readFile(fs, "/home/shelly/projects/f"), "two\nthree\n");
 });
 
-test("level 3: ls -a reveals the dotfile it just made", () => {
-  const { last } = session(getLevel(3), [`echo ${SECRET} > .env`, "ls -a"]);
+test("level 18: ls -a reveals the dotfile it just made", () => {
+  const { last } = session(getLevel(18), [`echo ${SECRET} > .env`, "ls -a"]);
   assert.match(last.stdout, /\.env/);
-  assert.doesNotMatch(session(getLevel(3), [`echo x > .env`, "ls"]).last.stdout, /\.env/);
+  assert.doesNotMatch(session(getLevel(18), [`echo x > .env`, "ls"]).last.stdout, /\.env/);
 });
 
 /* -------------------------------- Level 4 --------------------------------- */
 
-test("level 4: cat piped into grep solves it", () => {
-  const { last } = session(getLevel(4), ["cat logs/app.log | grep ERROR"]);
+test("level 23: cat piped into grep solves it", () => {
+  const { last } = session(getLevel(23), ["cat logs/app.log | grep ERROR"]);
   assert.equal(last.stdout.trim().split("\n").length, APP_LOG_ERRORS.length);
-  assert.equal(solved(getLevel(4), ["cat logs/app.log | grep ERROR"]), true);
+  assert.equal(solved(getLevel(23), ["cat logs/app.log | grep ERROR"]), true);
 });
 
-test("level 4: grep opening the file itself does not satisfy the pipe requirement", () => {
-  assert.equal(solved(getLevel(4), ["grep ERROR logs/app.log"]), false);
+test("level 23: grep opening the file itself does not satisfy the pipe requirement", () => {
+  assert.equal(solved(getLevel(23), ["grep ERROR logs/app.log"]), false);
 });
 
-test("level 4: grep -v and -c behave", () => {
-  const counted = session(getLevel(4), ["cat logs/app.log | grep -c ERROR"]).last;
+test("level 23: grep -v and -c behave", () => {
+  const counted = session(getLevel(23), ["cat logs/app.log | grep -c ERROR"]).last;
   assert.equal(counted.stdout.trim(), String(APP_LOG_ERRORS.length));
-  const inverted = session(getLevel(4), ["cat logs/app.log | grep -v ERROR"]).last;
+  const inverted = session(getLevel(23), ["cat logs/app.log | grep -v ERROR"]).last;
   assert.doesNotMatch(inverted.stdout, /ERROR/);
 });
 
-test("level 4: three-stage pipeline into wc -l", () => {
-  const { last } = session(getLevel(4), ["cat logs/app.log | grep ERROR | wc -l"]);
+test("level 23: three-stage pipeline into wc -l", () => {
+  const { last } = session(getLevel(23), ["cat logs/app.log | grep ERROR | wc -l"]);
   assert.equal(last.stdout.trim(), String(APP_LOG_ERRORS.length));
 });
 
-test("level 4: input redirection feeds grep from a file", () => {
-  const { last } = session(getLevel(4), ["grep ERROR < logs/app.log"]);
+test("level 23: input redirection feeds grep from a file", () => {
+  const { last } = session(getLevel(23), ["grep ERROR < logs/app.log"]);
   assert.equal(last.stdout.trim().split("\n").length, APP_LOG_ERRORS.length);
 });
 
@@ -200,7 +207,7 @@ test("tldr on an unknown page errors instead of opening the pane", () => {
 });
 
 test("help and clear bypass the level guardrails", () => {
-  const help = session(getLevel(4), ["help"]).last;
+  const help = session(getLevel(23), ["help"]).last;
   assert.ok(!help.blocked);
   assert.match(help.output, /objective/);
   assert.equal(session(getLevel(1), ["clear"]).last.effects.clear, true);

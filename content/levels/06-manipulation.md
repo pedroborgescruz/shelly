@@ -1,5 +1,5 @@
 ---
-id: 2
+id: 6
 chapter: manipulation
 title: Manipulation
 description: Make directories and files, and watch the tree change.

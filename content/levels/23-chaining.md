@@ -1,5 +1,5 @@
 ---
-id: 4
+id: 23
 chapter: pipes
 title: Chaining
 description: Join small tools into one that does what you need.

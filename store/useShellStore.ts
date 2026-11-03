@@ -9,6 +9,7 @@ import type {
   HistoryItem,
   HistoryStatus,
   Level,
+  Submission,
   VirtualFileSystem,
   WinCheckArgs,
 } from "@/lib/types";
@@ -53,6 +54,7 @@ interface ShellState {
   /* Progress bookkeeping used by win conditions */
   commandsRun: string[];
   operatorsUsed: string[];
+  submissions: Submission[];
 }
 
 interface ShellActions {
@@ -118,6 +120,7 @@ function freshLevelState(levelId: number) {
     nudged: false,
     commandsRun: [],
     operatorsUsed: [],
+    submissions: [],
   };
 }
 
@@ -140,6 +143,7 @@ const EMPTY_STATE: ShellState = {
   nudged: false,
   commandsRun: [],
   operatorsUsed: [],
+  submissions: [],
 };
 
 /* --------------------------------- Store ---------------------------------- */
@@ -263,6 +267,10 @@ export const useShellStore = create<ShellStore>()(
         const operatorsUsed = result.blocked
           ? state.operatorsUsed
           : [...new Set([...state.operatorsUsed, ...result.operators])];
+        const submissions =
+          result.blocked || !result.ast
+            ? state.submissions
+            : [...state.submissions, { script: result.ast, cwd: state.currentDirectory }];
 
         const winArgs: WinCheckArgs = {
           ast: result.ast ?? { type: "Script", statements: [] },
@@ -273,6 +281,7 @@ export const useShellStore = create<ShellStore>()(
           operatorsUsed,
           lineCommands: result.commandNames,
           lineOperators: result.operators,
+          submissions,
         };
 
         const { winCondition } = level;
@@ -346,6 +355,7 @@ export const useShellStore = create<ShellStore>()(
           inputHistory: [...state.inputHistory, trimmed],
           commandsRun,
           operatorsUsed,
+          submissions,
           attempts,
           nudged,
           isLevelSolved: state.isLevelSolved || justSolved,
@@ -361,7 +371,17 @@ export const useShellStore = create<ShellStore>()(
     {
       name: "shelly.progress",
       storage: createJSONStorage(() => localStorage),
-      version: 1,
+      version: 2,
+      /*
+       * Level ids were renumbered when the catalog grew from 4 to 29, so a
+       * stored list of solved ids from v1 now points at different levels.
+       * There is nothing to salvage: start the progress over.
+       */
+      migrate: () => ({
+        solvedLevelIds: [],
+        helpedLevelIds: [],
+        lastVisitedLevelId: 1,
+      }),
       /* Only progress survives a reload; the sandbox always starts clean. */
       partialize: (state) => ({
         solvedLevelIds: state.solvedLevelIds,
