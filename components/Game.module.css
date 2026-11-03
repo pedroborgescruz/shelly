@@ -3,6 +3,8 @@
   flex-direction: column;
   height: 100dvh;
   background: var(--bg);
+  /* The panes scroll internally; the page behind them must not. */
+  overflow: hidden;
 }
 
 .panes {
@@ -38,6 +40,7 @@
   .shell {
     height: auto;
     min-height: 100dvh;
+    overflow: visible;
   }
 
   .panes {

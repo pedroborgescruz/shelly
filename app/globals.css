@@ -37,7 +37,12 @@ html,
 body {
   margin: 0;
   padding: 0;
-  height: 100%;
+  /*
+   * The page scrolls by default — the chapter map is a long document. The
+   * game locks scrolling on its own shell instead (Game.module.css), because
+   * locking it here locked every other page too.
+   */
+  min-height: 100%;
   background: var(--bg);
   color: var(--fg);
   font-family: var(--font-mono), ui-monospace, "SF Mono", Menlo, monospace;
@@ -45,16 +50,6 @@ body {
   line-height: var(--line);
   -webkit-font-smoothing: antialiased;
   font-variant-ligatures: none;
-}
-
-body {
-  overflow: hidden;
-}
-
-@media (max-width: 900px) {
-  body {
-    overflow: auto;
-  }
 }
 
 button {
