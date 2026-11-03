@@ -146,16 +146,6 @@ unlocked command is implemented and documented.
 That contract is what makes the catalog safe to grow: a broken level fails the
 suite rather than someone's afternoon.
 
-## Divergences from the PRD
-
-- **No `bash-parser`.** The published package does not bundle cleanly for the
-  browser, and the grammar Shelly needs is small. `lib/parser/` is a hand-written
-  tokenizer and recursive-descent parser producing the same shape of AST.
-- **Win conditions are state-first.** The PRD's `targetCommand` /`requiredArgs`
-  shape makes "accept any valid syntax" hard. `requiredOperators` and
-  `requiredCommands` keep the AST assertions where they matter (you *must* use a
-  pipe to pass level 4), and a `check` predicate handles the rest.
-
 ## Levels that change nothing
 
 A level about `cd` or `ls` leaves the filesystem exactly as it found it, so
