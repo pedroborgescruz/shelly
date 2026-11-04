@@ -22,6 +22,8 @@ npm run dev     # http://localhost:3000
 npm test        # engine tests (node:test via tsx)
 ```
 
+For how the pieces fit together, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
 ## How it works
 
 The game is a small shell implementation, not a scripted animation. A submitted
