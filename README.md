@@ -24,6 +24,27 @@ npm test        # engine tests (node:test via tsx)
 
 For how the pieces fit together, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
+## Deploying
+
+The site is a static export — the game is a client-side shell session, so there
+is no server work to do. `.github/workflows/deploy.yml` builds it and publishes
+to GitHub Pages on every push to `main`, gated on the test suite.
+
+Two things that are easy to get wrong:
+
+- **`basePath`.** The site lives at `/shelly/`, not at the root, so the build
+  sets `basePath` and `assetPrefix` when `GITHUB_PAGES=true`. Local development
+  runs at `/` and leaves them unset.
+- **`.nojekyll`.** Pages runs Jekyll by default, and Jekyll silently drops every
+  directory whose name begins with an underscore — which is all of Next's
+  `_next/`. The workflow writes the file that turns it off.
+
+To check the deployed artifact locally, exactly as Pages serves it:
+
+```bash
+GITHUB_PAGES=true npm run build && mkdir -p /tmp/pages/shelly && cp -R out/* /tmp/pages/shelly/ && (cd /tmp/pages && python3 -m http.server 4321)
+```
+
 ## How it works
 
 The game is a small shell implementation, not a scripted animation. A submitted
